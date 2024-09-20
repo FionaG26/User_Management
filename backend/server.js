@@ -17,7 +17,7 @@ mongoose.connect(mongoURI)  // Removed deprecated options
 // Example route to check if the server is running
 app.get('/', (req, res) => res.send('Server is running'));
 
-// CRUD routes (for user management)
+// User Model
 const User = require('./models/User');
 
 // Create a new user
@@ -41,6 +41,21 @@ app.get('/users', async (req, res) => {
   }
 });
 
+// DELETE route: Delete a user by ID
+app.delete('/users/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting user', error: err.message });
+  }
+});
+
 // Start the server
 app.listen(3000, () => console.log('Server running on port 3000'));
-
